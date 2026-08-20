@@ -327,9 +327,9 @@ export function RestaurantFinder() {
   return (
     <div className="flex flex-1 flex-col">
       {/* 상단 히어로: 헤드라인 + 장소 검색 */}
-      <section className="border-b border-stone-200 bg-white px-6 py-8">
+      <section className="border-b border-stone-200 bg-white px-6 py-8 dark:border-stone-800 dark:bg-stone-900">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
-          <h1 className="text-3xl font-semibold tracking-tight text-stone-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             맛있는 여행을 계획해 보세요
           </h1>
 
@@ -338,7 +338,7 @@ export function RestaurantFinder() {
               <div className="relative flex-1">
                 <MapPin
                   size={20}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-orange-500"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 dark:text-orange-400"
                   aria-hidden="true"
                 />
                 <input
@@ -353,7 +353,7 @@ export function RestaurantFinder() {
                     setSelectedStopIds([]);
                   }}
                   placeholder="도시나 주소를 입력하세요 (예: 서울역, Paris)"
-                  className="h-11 w-full rounded-lg border border-stone-300 bg-white pl-10 pr-3 text-sm text-stone-900 outline-none transition-colors duration-200 placeholder:text-stone-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/30"
+                  className="h-11 w-full rounded-lg border border-stone-300 bg-white pl-10 pr-3 text-sm text-stone-900 outline-none transition-colors duration-200 placeholder:text-stone-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/30 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500"
                 />
               </div>
               <button
@@ -367,22 +367,22 @@ export function RestaurantFinder() {
             </div>
 
             {query.trim().length >= 2 && suggestionsState.status === "loading" && (
-              <p className="text-sm text-stone-500">검색 중...</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400">검색 중...</p>
             )}
             {query.trim().length >= 2 &&
               suggestionsState.status === "error" &&
               suggestionsState.query === query.trim() && (
-                <p className="text-sm text-red-600">{suggestionsState.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{suggestionsState.message}</p>
               )}
             {query.trim().length >= 2 &&
               suggestionsState.status === "results" &&
               suggestionsState.query === query.trim() && (
               <ul
                 role="listbox"
-                className="flex flex-col overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
+                className="flex flex-col overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900"
               >
                 {suggestionsState.suggestions.length === 0 ? (
-                  <li className="px-4 py-2.5 text-sm text-stone-500">
+                  <li className="px-4 py-2.5 text-sm text-stone-500 dark:text-stone-400">
                     일치하는 장소가 없습니다.
                   </li>
                 ) : (
@@ -393,7 +393,7 @@ export function RestaurantFinder() {
                         role="option"
                         aria-selected={selectedLocation?.label === suggestion.label}
                         onClick={() => handleSelectSuggestion(suggestion)}
-                        className="w-full px-4 py-2.5 text-left text-sm text-stone-700 transition-colors duration-200 hover:bg-orange-50"
+                        className="w-full px-4 py-2.5 text-left text-sm text-stone-700 transition-colors duration-200 hover:bg-orange-50 dark:text-stone-300 dark:hover:bg-orange-950/40"
                       >
                         {suggestion.label}
                       </button>
@@ -405,10 +405,10 @@ export function RestaurantFinder() {
 
             {selectedLocation && (
               <p
-                className="flex items-center gap-1.5 text-sm text-zinc-500"
+                className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400"
                 title={selectedLocation.label}
               >
-                <Navigation size={16} className="text-blue-600" aria-hidden="true" />
+                <Navigation size={16} className="text-blue-600 dark:text-blue-400" aria-hidden="true" />
                 출발지 · {originLabel}
               </p>
             )}
@@ -416,7 +416,7 @@ export function RestaurantFinder() {
 
           {/* 필터 영역: 이동수단 · 여행 일수 · 음식 카테고리 (한 줄) */}
           <div className="flex items-center gap-3 overflow-x-auto pb-1">
-            <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-zinc-200 bg-white p-1">
+            <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-zinc-200 bg-white p-1 dark:border-zinc-700 dark:bg-stone-900">
               {(["walk", "drive"] as const).map((option) => {
                 const OptionIcon = option === "walk" ? Footprints : CarFront;
                 const selected = mode === option;
@@ -429,7 +429,7 @@ export function RestaurantFinder() {
                       "flex min-h-10 items-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors duration-200",
                       selected
                         ? "border-transparent bg-orange-500 text-white shadow-sm"
-                        : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50",
+                        : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
                     )}
                   >
                     <OptionIcon size={16} aria-hidden="true" />
@@ -439,9 +439,9 @@ export function RestaurantFinder() {
               })}
             </div>
 
-            <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-zinc-200 bg-white px-2 py-1">
-              <span className="flex items-center gap-1.5 pl-1 text-sm text-zinc-600">
-                <CalendarDays size={16} className="text-orange-500" aria-hidden="true" />
+            <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-zinc-200 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-stone-900">
+              <span className="flex items-center gap-1.5 pl-1 text-sm text-zinc-600 dark:text-zinc-300">
+                <CalendarDays size={16} className="text-orange-500 dark:text-orange-400" aria-hidden="true" />
                 여행 일수
               </span>
               <button
@@ -449,12 +449,12 @@ export function RestaurantFinder() {
                 aria-label="여행 일수 줄이기"
                 disabled={tripDays <= 1}
                 onClick={() => handleTripDaysChange(tripDays - 1)}
-                className="flex size-9 items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 disabled:pointer-events-none disabled:text-zinc-300"
+                className="flex size-9 items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 disabled:pointer-events-none disabled:text-zinc-300 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:disabled:text-zinc-600"
               >
                 <Minus size={16} aria-hidden="true" />
               </button>
               <span
-                className="w-8 text-center text-sm font-semibold text-zinc-900"
+                className="w-8 text-center text-sm font-semibold text-zinc-900 dark:text-zinc-100"
                 aria-live="polite"
               >
                 {tripDays}일
@@ -464,7 +464,7 @@ export function RestaurantFinder() {
                 aria-label="여행 일수 늘리기"
                 disabled={tripDays >= MAX_TRIP_DAYS}
                 onClick={() => handleTripDaysChange(tripDays + 1)}
-                className="flex size-9 items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 disabled:pointer-events-none disabled:text-zinc-300"
+                className="flex size-9 items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 disabled:pointer-events-none disabled:text-zinc-300 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:disabled:text-zinc-600"
               >
                 <Plus size={16} aria-hidden="true" />
               </button>
@@ -472,11 +472,11 @@ export function RestaurantFinder() {
 
             {cuisineOptions.length > 0 && (
               <div className="flex shrink-0 items-center gap-2">
-                <span className="h-5 w-px shrink-0 bg-stone-200" aria-hidden="true" />
-                <span className="flex items-center gap-1.5 text-sm text-zinc-500">
+                <span className="h-5 w-px shrink-0 bg-stone-200 dark:bg-stone-800" aria-hidden="true" />
+                <span className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
                   <SlidersHorizontal
                     size={16}
-                    className="text-zinc-400"
+                    className="text-zinc-400 dark:text-zinc-500"
                     aria-hidden="true"
                   />
                   카테고리
@@ -487,8 +487,8 @@ export function RestaurantFinder() {
                   className={cn(
                     "shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-200",
                     selectedCuisineSlug === null
-                      ? "border-orange-200 bg-orange-50 text-orange-700"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50",
+                      ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-300"
+                      : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
                   )}
                 >
                   전체
@@ -501,8 +501,8 @@ export function RestaurantFinder() {
                     className={cn(
                       "shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-200",
                       selectedCuisineSlug === option.slug
-                        ? "border-orange-200 bg-orange-50 text-orange-700"
-                        : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50",
+                        ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-300"
+                        : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
                     )}
                   >
                     {option.label}
@@ -517,15 +517,15 @@ export function RestaurantFinder() {
       {/* 본문: 왼쪽 음식점 패널 + 오른쪽 일정 패널 */}
       <section className="flex flex-1 flex-col gap-6 px-6 py-6 lg:flex-row lg:items-start">
         {/* 왼쪽: 음식점 검색 및 선택 패널 (420px, 독립 스크롤) */}
-        <div className="flex w-full flex-col rounded-xl border border-stone-200 bg-white lg:h-[calc(100vh-64px-1px-1px)] lg:w-[420px] lg:shrink-0">
-          <div className="flex shrink-0 flex-col gap-1 border-b border-stone-100 px-5 py-4">
-            <span className="text-lg font-semibold text-stone-900">
+        <div className="flex w-full flex-col rounded-xl border border-stone-200 bg-white lg:h-[calc(100vh-64px-1px-1px)] lg:w-[420px] lg:shrink-0 dark:border-stone-800 dark:bg-stone-900">
+          <div className="flex shrink-0 flex-col gap-1 border-b border-stone-100 px-5 py-4 dark:border-stone-800">
+            <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">
               {restaurantsState.status === "results"
                 ? `주변 음식점 ${restaurantsState.restaurants.length}곳 · ${selectedStopIds.length}곳 선택`
                 : "주변 음식점"}
             </span>
             {selectedStopIds.length >= maxSelectedStops && maxSelectedStops > 0 && (
-              <span className="text-xs text-stone-500">
+              <span className="text-xs text-stone-500 dark:text-stone-400">
                 최대 {maxSelectedStops}곳까지 선택할 수 있어요.
               </span>
             )}
@@ -533,23 +533,23 @@ export function RestaurantFinder() {
 
           <div className="flex-1 overflow-y-auto px-5 py-4 lg:min-h-0">
             {!selectedLocation && (
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-stone-500 dark:text-stone-400">
                 장소를 검색하고 선택하면 주변 음식점을 보여드려요.
               </p>
             )}
             {restaurantsState.status === "loading" && (
-              <p className="text-sm text-stone-500">주변 음식점을 찾는 중...</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400">주변 음식점을 찾는 중...</p>
             )}
             {restaurantsState.status === "error" && (
-              <p className="text-sm text-red-600">{restaurantsState.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{restaurantsState.message}</p>
             )}
             {restaurantsState.status === "results" &&
               (restaurantsState.restaurants.length === 0 ? (
-                <p className="text-sm text-stone-500">
+                <p className="text-sm text-stone-500 dark:text-stone-400">
                   이 근처에서 음식점을 찾지 못했어요.
                 </p>
               ) : visibleRestaurants.length === 0 ? (
-                <p className="text-sm text-stone-500">
+                <p className="text-sm text-stone-500 dark:text-stone-400">
                   이 음식 종류에 해당하는 곳이 없어요.
                 </p>
               ) : (
@@ -564,8 +564,8 @@ export function RestaurantFinder() {
                           className={cn(
                             "relative flex cursor-pointer gap-3 rounded-lg border p-3 transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-orange-400",
                             isSelected
-                              ? "border-orange-400 bg-orange-50/60 shadow-sm"
-                              : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm",
+                              ? "border-orange-400 bg-orange-50/60 shadow-sm dark:border-orange-500 dark:bg-orange-950/30"
+                              : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm dark:border-zinc-700 dark:bg-stone-900 dark:hover:border-zinc-600",
                             isDisabled && "pointer-events-none opacity-50",
                           )}
                         >
@@ -577,26 +577,26 @@ export function RestaurantFinder() {
                             onChange={() => toggleStopSelection(restaurant.placeId)}
                             className="sr-only"
                           />
-                          <span className="flex size-[72px] shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50">
+                          <span className="flex size-[72px] shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/20">
                             <UtensilsCrossed
                               size={24}
-                              className="text-orange-500"
+                              className="text-orange-500 dark:text-orange-400"
                               aria-hidden="true"
                             />
                           </span>
                           <span className="flex min-w-0 flex-1 flex-col gap-0.5 pr-6">
-                            <span className="truncate text-sm font-medium text-stone-900">
+                            <span className="truncate text-sm font-medium text-stone-900 dark:text-stone-100">
                               {restaurant.name}
                             </span>
-                            <span className="line-clamp-2 text-xs text-stone-500">
+                            <span className="line-clamp-2 text-xs text-stone-500 dark:text-stone-400">
                               {restaurant.address}
                             </span>
                             <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
                                 <ModeIcon size={16} aria-hidden="true" />
                                 {modeLabel} {formatDuration(restaurant.travelTimeSeconds)}
                               </span>
-                              <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+                              <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                                 <Route size={16} aria-hidden="true" />
                                 {formatDistance(restaurant.distanceMeters)}
                               </span>
@@ -604,9 +604,9 @@ export function RestaurantFinder() {
                           </span>
                           <span className="absolute right-3 top-3" aria-hidden="true">
                             {isSelected ? (
-                              <CircleCheck size={20} className="text-orange-500" />
+                              <CircleCheck size={20} className="text-orange-500 dark:text-orange-400" />
                             ) : (
-                              <Circle size={20} className="text-zinc-300" />
+                              <Circle size={20} className="text-zinc-300 dark:text-zinc-600" />
                             )}
                           </span>
                         </label>
@@ -619,16 +619,16 @@ export function RestaurantFinder() {
         </div>
 
         {/* 오른쪽: 일자별 일정 (Day 탭) */}
-        <div className="flex w-full flex-1 flex-col rounded-xl border border-stone-200 bg-white lg:h-[calc(100vh-64px-1px-1px)]">
+        <div className="flex w-full flex-1 flex-col rounded-xl border border-stone-200 bg-white lg:h-[calc(100vh-64px-1px-1px)] dark:border-stone-800 dark:bg-stone-900">
           {selectedStops.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-5 py-12">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-stone-500 dark:text-stone-400">
                 음식점을 선택하면 일자별 일정을 만들어드려요.
               </p>
             </div>
           ) : (
             <>
-              <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-stone-100 px-5 pt-4">
+              <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-stone-100 px-5 pt-4 dark:border-stone-800">
                 {Array.from({ length: tripDays }, (_, dayIndex) => {
                   const dayCount =
                     dayPlansState.status === "results" &&
@@ -644,10 +644,10 @@ export function RestaurantFinder() {
                       className={cn(
                         "flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-2 text-sm font-medium transition-colors duration-200",
                         safeDayIndex === dayIndex
-                          ? "border-orange-500 text-orange-600"
+                          ? "border-orange-500 text-orange-600 dark:text-orange-400"
                           : isEmpty
-                            ? "border-transparent text-stone-300 hover:text-stone-400"
-                            : "border-transparent text-stone-500 hover:text-stone-700",
+                            ? "border-transparent text-stone-300 hover:text-stone-400 dark:text-stone-600 dark:hover:text-stone-500"
+                            : "border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300",
                       )}
                     >
                       Day {dayIndex + 1}
@@ -656,10 +656,10 @@ export function RestaurantFinder() {
                           className={cn(
                             "flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-semibold",
                             safeDayIndex === dayIndex
-                              ? "bg-orange-100 text-orange-600"
+                              ? "bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400"
                               : isEmpty
-                                ? "bg-stone-100 text-stone-400"
-                                : "bg-stone-100 text-stone-600",
+                                ? "bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-600"
+                                : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
                           )}
                         >
                           {dayCount}
@@ -672,13 +672,13 @@ export function RestaurantFinder() {
 
               <div className="flex-1 overflow-y-auto px-5 py-4 lg:min-h-0">
                 {dayPlansState.status === "loading" && (
-                  <p className="text-sm text-stone-500">
+                  <p className="text-sm text-stone-500 dark:text-stone-400">
                     날짜별 방문 순서를 계산하는 중...
                   </p>
                 )}
                 {dayPlansState.status === "error" &&
                   dayPlansState.requestKey === currentRequestKey && (
-                    <p className="text-sm text-red-600">{dayPlansState.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">{dayPlansState.message}</p>
                   )}
                 {dayPlansState.status === "results" &&
                   dayPlansState.requestKey === currentRequestKey &&
@@ -686,7 +686,7 @@ export function RestaurantFinder() {
                     const day = dayPlansState.days[safeDayIndex];
                     if (!day) {
                       return (
-                        <p className="text-sm text-stone-500">
+                        <p className="text-sm text-stone-500 dark:text-stone-400">
                           이 날짜에 배정된 곳이 없어요.
                         </p>
                       );
@@ -694,37 +694,37 @@ export function RestaurantFinder() {
                     const hasReturnLeg = day.legs.length > day.order.length;
                     return (
                       <div className="flex flex-col gap-4">
-                        <div className="grid grid-cols-3 divide-x divide-orange-100 rounded-2xl bg-orange-50">
+                        <div className="grid grid-cols-3 divide-x divide-orange-100 rounded-2xl bg-orange-50 dark:divide-orange-900 dark:bg-orange-950/30">
                           <div className="flex flex-col items-center gap-1 px-3 py-3">
                             <MapPinned
                               size={16}
-                              className="text-orange-500"
+                              className="text-orange-500 dark:text-orange-400"
                               aria-hidden="true"
                             />
-                            <span className="text-xs text-zinc-500">방문 장소</span>
-                            <span className="text-sm font-semibold text-zinc-900">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">방문 장소</span>
+                            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                               {day.order.length}곳
                             </span>
                           </div>
                           <div className="flex flex-col items-center gap-1 px-3 py-3">
                             <Timer
                               size={16}
-                              className="text-orange-500"
+                              className="text-orange-500 dark:text-orange-400"
                               aria-hidden="true"
                             />
-                            <span className="text-xs text-zinc-500">총 이동시간</span>
-                            <span className="text-sm font-semibold text-zinc-900">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">총 이동시간</span>
+                            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                               {formatDuration(day.totalTravelTimeSeconds)}
                             </span>
                           </div>
                           <div className="flex flex-col items-center gap-1 px-3 py-3">
                             <Route
                               size={16}
-                              className="text-orange-500"
+                              className="text-orange-500 dark:text-orange-400"
                               aria-hidden="true"
                             />
-                            <span className="text-xs text-zinc-500">총 이동거리</span>
-                            <span className="text-sm font-semibold text-zinc-900">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">총 이동거리</span>
+                            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                               {formatDistance(day.totalDistanceMeters)}
                             </span>
                           </div>
@@ -734,21 +734,21 @@ export function RestaurantFinder() {
                           {/* 출발지 노드 */}
                           <li className="flex gap-3">
                             <div className="flex flex-col items-center">
-                              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-50">
+                              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/40">
                                 <Navigation
                                   size={14}
-                                  className="text-blue-600"
+                                  className="text-blue-600 dark:text-blue-400"
                                   aria-hidden="true"
                                 />
                               </span>
-                              <span className="w-px flex-1 bg-stone-200" />
+                              <span className="w-px flex-1 bg-stone-200 dark:bg-stone-800" />
                             </div>
                             <div className="flex flex-col pb-4">
-                              <span className="text-sm font-medium text-stone-900">
+                              <span className="text-sm font-medium text-stone-900 dark:text-stone-100">
                                 출발지 · {originLabel || "출발지"}
                               </span>
                               {day.legs[0] && (
-                                <span className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                                <span className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                                   <ModeIcon size={14} aria-hidden="true" />
                                   {formatDuration(day.legs[0].travelTimeSeconds)} ·{" "}
                                   {formatDistance(day.legs[0].distanceMeters)}
@@ -768,18 +768,18 @@ export function RestaurantFinder() {
                                     {index + 1}
                                   </span>
                                   {(!isLast || hasReturnLeg) && (
-                                    <span className="w-px flex-1 bg-stone-200" />
+                                    <span className="w-px flex-1 bg-stone-200 dark:bg-stone-800" />
                                   )}
                                 </div>
                                 <div className="flex flex-col pb-4">
-                                  <span className="text-sm font-medium text-stone-900">
+                                  <span className="text-sm font-medium text-stone-900 dark:text-stone-100">
                                     {stop.name}
                                   </span>
-                                  <span className="line-clamp-1 text-xs text-stone-500">
+                                  <span className="line-clamp-1 text-xs text-stone-500 dark:text-stone-400">
                                     {stop.address}
                                   </span>
                                   {nextLeg && (
-                                    <span className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                                    <span className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                                       <ModeIcon size={14} aria-hidden="true" />
                                       {formatDuration(nextLeg.travelTimeSeconds)} ·{" "}
                                       {formatDistance(nextLeg.distanceMeters)}
@@ -794,16 +794,16 @@ export function RestaurantFinder() {
                           {hasReturnLeg && (
                             <li className="flex gap-3">
                               <div className="flex flex-col items-center">
-                                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-50">
+                                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/40">
                                   <RotateCcw
                                     size={14}
-                                    className="text-blue-600"
+                                    className="text-blue-600 dark:text-blue-400"
                                     aria-hidden="true"
                                   />
                                 </span>
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-sm font-medium text-stone-900">
+                                <span className="text-sm font-medium text-stone-900 dark:text-stone-100">
                                   출발지로 돌아가기
                                 </span>
                               </div>
