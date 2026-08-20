@@ -3,9 +3,9 @@ import { rankRestaurantsByTravelTime, type RestaurantPlace } from "@/lib/geoapif
 
 describe("rankRestaurantsByTravelTime", () => {
   const places: RestaurantPlace[] = [
-    { placeId: "a", name: "Far Place", address: "A", lat: 1, lon: 1 },
-    { placeId: "b", name: "Near Place", address: "B", lat: 2, lon: 2 },
-    { placeId: "c", name: "Mid Place", address: "C", lat: 3, lon: 3 },
+    { placeId: "a", name: "Far Place", address: "A", lat: 1, lon: 1, categories: [] },
+    { placeId: "b", name: "Near Place", address: "B", lat: 2, lon: 2, categories: [] },
+    { placeId: "c", name: "Mid Place", address: "C", lat: 3, lon: 3, categories: [] },
   ];
 
   test("정렬: 이동시간이 짧은 순으로 정렬한다", () => {

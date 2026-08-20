@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LocationSuggestion, RankedRestaurant, TravelMode } from "@/lib/geoapify";
 import { MAX_STOPS_PER_DAY } from "@/lib/day-planner";
+import { cuisineLabel, extractCuisineSlug } from "@/lib/cuisine";
 import { cn } from "@/lib/utils";
 
 type SuggestionsState =
@@ -74,6 +75,7 @@ export function RestaurantFinder() {
     status: "idle",
   });
   const [selectedStopIds, setSelectedStopIds] = useState<string[]>([]);
+  const [selectedCuisineSlug, setSelectedCuisineSlug] = useState<string | null>(null);
   const [dayPlansState, setDayPlansState] = useState<DayPlansState>({
     status: "idle",
   });
@@ -134,6 +136,7 @@ export function RestaurantFinder() {
 
     (async () => {
       setRestaurantsState({ status: "loading" });
+      setSelectedCuisineSlug(null);
       try {
         const url = `/api/restaurants?lat=${selectedLocation.lat}&lon=${selectedLocation.lon}&mode=${mode}`;
         const response = await fetch(url);
@@ -165,6 +168,41 @@ export function RestaurantFinder() {
   const selectedStops: Stop[] =
     restaurantsState.status === "results"
       ? restaurantsState.restaurants.filter((r) => selectedStopIds.includes(r.placeId))
+      : [];
+
+  const OTHER_CUISINE_SLUG = "__other__";
+
+  const cuisineOptions: { slug: string; label: string }[] =
+    restaurantsState.status === "results"
+      ? [
+          ...Array.from(
+            new Set(
+              restaurantsState.restaurants
+                .map((r) => extractCuisineSlug(r.categories))
+                .filter((slug): slug is string => slug !== null),
+            ),
+          )
+            .map((slug) => ({ slug, label: cuisineLabel(slug) }))
+            .sort((a, b) => a.label.localeCompare(b.label)),
+          ...(restaurantsState.restaurants.some(
+            (r) => extractCuisineSlug(r.categories) === null,
+          )
+            ? [{ slug: OTHER_CUISINE_SLUG, label: "기타" }]
+            : []),
+        ]
+      : [];
+
+  const visibleRestaurants: RankedRestaurant[] =
+    restaurantsState.status === "results"
+      ? selectedCuisineSlug === null
+        ? restaurantsState.restaurants
+        : selectedCuisineSlug === OTHER_CUISINE_SLUG
+          ? restaurantsState.restaurants.filter(
+              (r) => extractCuisineSlug(r.categories) === null,
+            )
+          : restaurantsState.restaurants.filter(
+              (r) => extractCuisineSlug(r.categories) === selectedCuisineSlug,
+            )
       : [];
 
   useEffect(() => {
@@ -263,6 +301,11 @@ export function RestaurantFinder() {
           placeholder="도시나 주소를 입력하세요 (예: 서울역, Paris)"
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
         />
+        {selectedLocation && (
+          <p className="text-sm text-muted-foreground">
+            출발점: {selectedLocation.label}
+          </p>
+        )}
         {query.trim().length >= 2 && suggestionsState.status === "loading" && (
           <p className="text-sm text-muted-foreground">검색 중...</p>
         )}
@@ -301,45 +344,45 @@ export function RestaurantFinder() {
         )}
       </div>
 
-      <div className="flex gap-6">
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">이동수단</span>
-          <div className="flex gap-2">
-            {(["walk", "drive"] as const).map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setMode(option)}
-                className={cn(
-                  "rounded-full border px-4 py-1.5 text-sm",
-                  mode === option
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-background text-foreground",
-                )}
-              >
-                {option === "walk" ? "도보" : "자동차"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="trip-days" className="text-sm font-medium">
-            여행 일수
-          </label>
-          <input
-            id="trip-days"
-            type="number"
-            min={1}
-            value={tripDays}
-            onChange={(event) => handleTripDaysChange(Number(event.target.value))}
-            className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-      </div>
-
       <div className="flex flex-col gap-6 md:flex-row md:items-start">
-        <div className="flex flex-col gap-2 md:w-1/2">
+        <div className="flex flex-col gap-6 md:w-1/2">
+          <div className="flex gap-6">
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium">이동수단</span>
+              <div className="flex gap-2">
+                {(["walk", "drive"] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setMode(option)}
+                    className={cn(
+                      "rounded-full border px-4 py-1.5 text-sm",
+                      mode === option
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-foreground",
+                    )}
+                  >
+                    {option === "walk" ? "도보" : "자동차"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="trip-days" className="text-sm font-medium">
+                여행 일수
+              </label>
+              <input
+                id="trip-days"
+                type="number"
+                min={1}
+                value={tripDays}
+                onChange={(event) => handleTripDaysChange(Number(event.target.value))}
+                className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+
           {selectedStops.length > 0 && (
             <>
               <span className="text-sm font-medium">
@@ -362,7 +405,10 @@ export function RestaurantFinder() {
                         key={dayIndex}
                         className="flex flex-col gap-3 rounded-md border border-border p-3"
                       >
-                        <span className="font-medium">{dayIndex + 1}일차</span>
+                        <span className="font-medium">
+                          {dayIndex + 1}일차
+                          {selectedLocation && ` (${selectedLocation.label} 출발)`}
+                        </span>
                         {day === null ? (
                           <p className="text-sm text-muted-foreground">
                             이 날짜에 배정된 곳이 없어요.
@@ -407,11 +453,44 @@ export function RestaurantFinder() {
         <div className="flex flex-col gap-2 md:w-1/2">
           {restaurantsState.status === "results" &&
             restaurantsState.restaurants.length > 0 && (
-              <p className="text-sm text-muted-foreground">
-                {selectedStopIds.length}/{maxSelectedStops}곳 선택함
-                {selectedStopIds.length >= maxSelectedStops &&
-                  ` — 최대 ${maxSelectedStops}곳까지 선택할 수 있어요.`}
-              </p>
+              <>
+                {cuisineOptions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCuisineSlug(null)}
+                      className={cn(
+                        "rounded-full border px-3 py-1 text-sm",
+                        selectedCuisineSlug === null
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-foreground",
+                      )}
+                    >
+                      전체
+                    </button>
+                    {cuisineOptions.map((option) => (
+                      <button
+                        key={option.slug}
+                        type="button"
+                        onClick={() => setSelectedCuisineSlug(option.slug)}
+                        className={cn(
+                          "rounded-full border px-3 py-1 text-sm",
+                          selectedCuisineSlug === option.slug
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background text-foreground",
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {selectedStopIds.length}/{maxSelectedStops}곳 선택함
+                  {selectedStopIds.length >= maxSelectedStops &&
+                    ` — 최대 ${maxSelectedStops}곳까지 선택할 수 있어요.`}
+                </p>
+              </>
             )}
           {!selectedLocation && (
             <p className="text-sm text-muted-foreground">
@@ -429,9 +508,13 @@ export function RestaurantFinder() {
               <p className="text-sm text-muted-foreground">
                 이 근처에서 음식점을 찾지 못했어요.
               </p>
+            ) : visibleRestaurants.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                이 음식 종류에 해당하는 곳이 없어요.
+              </p>
             ) : (
               <ol className="flex flex-col gap-2">
-                {restaurantsState.restaurants.map((restaurant) => {
+                {visibleRestaurants.map((restaurant) => {
                   const isSelected = selectedStopIds.includes(restaurant.placeId);
                   const isDisabled =
                     !isSelected && selectedStopIds.length >= maxSelectedStops;

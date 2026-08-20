@@ -12,6 +12,7 @@ export type RestaurantPlace = {
   address: string;
   lat: number;
   lon: number;
+  categories: string[];
 };
 
 export type RankedRestaurant = RestaurantPlace & {
@@ -83,13 +84,14 @@ export async function searchNearbyRestaurants(
       const properties = (feature as { properties?: Record<string, unknown> })
         .properties;
       if (!properties) return null;
-      const { place_id, name, formatted, lat: placeLat, lon: placeLon } =
+      const { place_id, name, formatted, lat: placeLat, lon: placeLon, categories } =
         properties as {
           place_id?: string;
           name?: string;
           formatted?: string;
           lat?: number;
           lon?: number;
+          categories?: unknown;
         };
       if (
         typeof placeLat !== "number" ||
@@ -104,6 +106,9 @@ export async function searchNearbyRestaurants(
         address: formatted ?? "",
         lat: placeLat,
         lon: placeLon,
+        categories: Array.isArray(categories)
+          ? categories.filter((c): c is string => typeof c === "string")
+          : [],
       };
     })
     .filter((value): value is RestaurantPlace => value !== null);
