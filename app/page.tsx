@@ -2,14 +2,18 @@ import { RestaurantFinder } from "@/components/restaurant-finder";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center bg-background font-sans">
-      <main className="flex w-full max-w-3xl flex-col items-center gap-8 px-6 py-16 sm:items-start">
-        <div className="flex flex-col gap-2 sm:items-start">
-          <h1 className="text-2xl font-semibold tracking-tight">RouteBite</h1>
-          <p className="text-muted-foreground">
-            장소를 검색하면, 가까운 순으로 정렬된 주변 음식점을 보여드려요.
-          </p>
+    <div className="flex min-h-screen flex-col bg-stone-50 font-sans">
+      <header className="flex h-16 shrink-0 items-center border-b border-stone-200 bg-white px-6">
+        <div className="flex items-center gap-2">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-orange-500 text-sm font-bold text-white">
+            R
+          </span>
+          <span className="text-lg font-semibold tracking-tight text-stone-900">
+            RouteBite
+          </span>
         </div>
+      </header>
+      <main className="flex flex-1 flex-col">
         <RestaurantFinder />
       </main>
     </div>
