@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGeoapifyApiKey, type TravelMode } from "@/lib/geoapify";
+import { GeoapifyQuotaExceededError, getGeoapifyApiKey, type TravelMode } from "@/lib/geoapify";
 import { MAX_STOPS_PER_DAY } from "@/lib/day-planner";
 import { isValidStop, planRoundTrip } from "@/lib/route-plan";
 
@@ -61,7 +61,13 @@ export async function POST(request: NextRequest) {
     const origin = { lat: originPoint.lat, lon: originPoint.lon };
     const plan = await planRoundTrip(mode as TravelMode, origin, stops, apiKey);
     return NextResponse.json(plan);
-  } catch {
+  } catch (error) {
+    if (error instanceof GeoapifyQuotaExceededError) {
+      return NextResponse.json(
+        { error: "오늘의 Geoapify 무료 사용량(3,000크레딧)을 모두 사용했습니다. 내일 다시 시도해주세요." },
+        { status: 429 },
+      );
+    }
     return NextResponse.json(
       { error: "방문 순서를 계산하지 못했습니다." },
       { status: 502 },

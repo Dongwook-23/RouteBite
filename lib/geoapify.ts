@@ -22,6 +22,35 @@ export type RankedRestaurant = RestaurantPlace & {
 
 const GEOAPIFY_BASE_URL = "https://api.geoapify.com";
 
+// Geoapify 무료 플랜의 일일 크레딧 한도. 자정(UTC) 기준으로 초기화된다.
+export const GEOAPIFY_DAILY_CREDIT_LIMIT = 3000;
+
+export class GeoapifyQuotaExceededError extends Error {
+  constructor() {
+    super("Geoapify daily credit limit exceeded");
+    this.name = "GeoapifyQuotaExceededError";
+  }
+}
+
+let creditUsageDate = "";
+let creditsUsedToday = 0;
+
+/**
+ * 요청 1건이 소비할 크레딧을 사전에 차감한다. 남은 한도가 부족하면
+ * 실제 Geoapify 호출 없이 GeoapifyQuotaExceededError를 던진다.
+ */
+function reserveGeoapifyCredits(amount: number): void {
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== creditUsageDate) {
+    creditUsageDate = today;
+    creditsUsedToday = 0;
+  }
+  if (creditsUsedToday + amount > GEOAPIFY_DAILY_CREDIT_LIMIT) {
+    throw new GeoapifyQuotaExceededError();
+  }
+  creditsUsedToday += amount;
+}
+
 export function getGeoapifyApiKey(): string {
   const apiKey = process.env.GEOAPIFY_API_KEY;
   if (!apiKey) {
@@ -40,6 +69,7 @@ export async function geocodeAutocomplete(
   url.searchParams.set("limit", "5");
   url.searchParams.set("apiKey", apiKey);
 
+  reserveGeoapifyCredits(1);
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Geoapify autocomplete request failed: ${response.status}`);
@@ -72,6 +102,7 @@ export async function searchNearbyRestaurants(
   url.searchParams.set("limit", String(limit));
   url.searchParams.set("apiKey", apiKey);
 
+  reserveGeoapifyCredits(1);
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Geoapify places request failed: ${response.status}`);
@@ -131,6 +162,8 @@ export async function computeTravelTimes(
   const url = new URL(`${GEOAPIFY_BASE_URL}/v1/routematrix`);
   url.searchParams.set("apiKey", apiKey);
 
+  // Route Matrix 크레딧 비용은 (출발지 수 x 목적지 수)에 비례한다.
+  reserveGeoapifyCredits(destinations.length);
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -174,6 +207,9 @@ export async function computeTravelTimeMatrix(
   url.searchParams.set("apiKey", apiKey);
 
   const locations = points.map((p) => ({ location: [p.lon, p.lat] }));
+
+  // Route Matrix 크레딧 비용은 (출발지 수 x 목적지 수)에 비례한다.
+  reserveGeoapifyCredits(points.length * points.length);
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

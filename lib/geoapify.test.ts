@@ -1,5 +1,11 @@
-import { describe, expect, test } from "vitest";
-import { rankRestaurantsByTravelTime, type RestaurantPlace } from "@/lib/geoapify";
+import { describe, expect, test, vi } from "vitest";
+import {
+  GEOAPIFY_DAILY_CREDIT_LIMIT,
+  GeoapifyQuotaExceededError,
+  geocodeAutocomplete,
+  rankRestaurantsByTravelTime,
+  type RestaurantPlace,
+} from "@/lib/geoapify";
 
 describe("rankRestaurantsByTravelTime", () => {
   const places: RestaurantPlace[] = [
@@ -35,5 +41,27 @@ describe("rankRestaurantsByTravelTime", () => {
 
   test("빈 목록이면 빈 배열을 반환한다", () => {
     expect(rankRestaurantsByTravelTime([], [])).toEqual([]);
+  });
+});
+
+describe("Geoapify 일일 크레딧 한도", () => {
+  test("일일 한도를 초과하면 실제 요청 없이 GeoapifyQuotaExceededError를 던진다", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ results: [] }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    for (let i = 0; i < GEOAPIFY_DAILY_CREDIT_LIMIT; i++) {
+      await geocodeAutocomplete("test", "key");
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(GEOAPIFY_DAILY_CREDIT_LIMIT);
+
+    await expect(geocodeAutocomplete("test", "key")).rejects.toThrow(
+      GeoapifyQuotaExceededError,
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(GEOAPIFY_DAILY_CREDIT_LIMIT);
+
+    vi.unstubAllGlobals();
   });
 });

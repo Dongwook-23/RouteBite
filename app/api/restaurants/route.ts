@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  GeoapifyQuotaExceededError,
   computeTravelTimes,
   getGeoapifyApiKey,
   rankRestaurantsByTravelTime,
@@ -61,7 +62,13 @@ export async function GET(request: NextRequest) {
     );
     const restaurants = rankRestaurantsByTravelTime(places, travelTimes);
     return NextResponse.json({ restaurants });
-  } catch {
+  } catch (error) {
+    if (error instanceof GeoapifyQuotaExceededError) {
+      return NextResponse.json(
+        { error: "오늘의 Geoapify 무료 사용량(3,000크레딧)을 모두 사용했습니다. 내일 다시 시도해주세요." },
+        { status: 429 },
+      );
+    }
     return NextResponse.json(
       { error: "주변 음식점을 불러오지 못했습니다." },
       { status: 502 },
