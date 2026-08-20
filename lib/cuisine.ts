@@ -20,6 +20,7 @@ const CUISINE_LABELS: Record<string, string> = {
   seafood: "해산물",
   vegetarian: "채식",
   vegan: "비건",
+  asian: "아시안",
   bbq: "바베큐",
   steak_house: "스테이크하우스",
   burger: "버거",
